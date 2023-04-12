@@ -3,7 +3,7 @@ const prismaClient = require("./src/database/prismaClient");
 const cors = require("cors");
 const { product } = require("./src/database/prismaClient");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(cors());
