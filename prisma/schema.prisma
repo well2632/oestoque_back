@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// YARN PRISMA MIGRATE DEV  
+// Gera uma nova migrate (atualiza o banco de dados)
+
+// NPX PRISMA STUDIO
+// Abre um painel para mexer no prisma
+
+// PM2 INITIATE
+// pm2 start "npm run dev" --name name
+
+// PM2 KILL ALL
+// pm2 kill
+
+// DB PUSH HEROKU
+// npx prisma db push --preview-feature
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id       String    @id @default(uuid())
+    email    String?   @unique
+    password String?
+    products Product[]
+}
+
+model Product {
+    id       String  @id @default(uuid())
+    name     String?
+    quantity Int?    @default(0)
+    user     User    @relation(fields: [userId], references: [id])
+    userId   String
+}
