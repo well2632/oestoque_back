@@ -12,20 +12,39 @@ app.get("/", (req, res) => {
   res.send("Hello world!");
 });
 
-app.get("/user/login", async (req, res) => {
-  const user = await prismaClient.user.findUnique({
+app.post("/user/login", async (req, res) => {
+  const user = await prismaClient.user.findFirst({
     where: {
       email: req.body.email,
     },
   });
 
-  if (user) {
-    res.json(user);
+  if (!user) return res.status(404).json({ error: "Usuário ou senha inválidos" });
+
+  if (user.password === req.body.password) {
+    return res.json({ ...user, password: null });
   } else {
-    res.status(404).json({
-      error: "Usuário não encontrado",
-    });
+    return res.status(404).json({ error: "Usuário ou senha inválidos" });
   }
+});
+
+app.post("/user/register", async (req, res) => {
+  const existUserWithEmail = await prismaClient.user.findFirst({
+    where: {
+      email: req.body.email,
+    },
+  });
+
+  if (existUserWithEmail) return res.status(409).json({ error: "E-mail já cadastrado!" });
+
+  const user = await prismaClient.user.create({
+    data: {
+      email: req.body.email,
+      password: req.body.password,
+    },
+  });
+
+  res.json({ ...user, password: null });
 });
 
 app.post("/user/create", async (req, res) => {
