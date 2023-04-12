@@ -109,6 +109,17 @@ app.delete("/product/:id", async (req, res) => {
   res.status(200).send(deletedProduct);
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Aplicativo rodando na porta ${port}`);
+});
+
+server.on("close", () => {
+  console.log("Servidor encerrado");
+});
+
+process.on("SIGTERM", () => {
+  console.log("Recebido SIGTERM. Encerrando o servidor");
+  server.close(() => {
+    console.log("Servidor encerrado");
+  });
 });
